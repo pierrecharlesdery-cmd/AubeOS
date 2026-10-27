@@ -1,3 +1,6 @@
 [General]
 LogoPath=/usr/share/icons/hicolor/256x256/apps/aube-logo.png
 Website=https://github.com/pierrecharlesdery-cmd/AubeOS
+# Afficher « Aube 26.10 » (VERSION) plutôt que « Aube 44 » (VERSION_ID de Fedora).
+UseOSReleaseVersion=true
+Variant=Basée sur Fedora Kinoite

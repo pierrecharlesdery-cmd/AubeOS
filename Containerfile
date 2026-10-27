@@ -78,7 +78,7 @@ RUN mkdir -p /etc/flatpak/remotes.d && \
 RUN AUBE_VERSION="${AUBE_VERSION:-$(date -u +%y.%m)}" && \
     sed -i \
         -e "s|^NAME=.*|NAME=\"Aube\"|" \
-        -e "s|^VERSION=.*|VERSION=\"${AUBE_VERSION} (Fedora ${FEDORA_VERSION})\"|" \
+        -e "s|^VERSION=.*|VERSION=\"${AUBE_VERSION}\"|" \
         -e "s|^PRETTY_NAME=.*|PRETTY_NAME=\"Aube ${AUBE_VERSION}\"|" \
         -e "s|^ANSI_COLOR=.*|ANSI_COLOR=\"38;2;255;122;61\"|" \
         -e "s|^LOGO=.*|LOGO=aube-logo|" \
