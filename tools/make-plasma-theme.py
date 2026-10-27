@@ -4,8 +4,9 @@
 Seuls les éléments qui changent sont fournis ; pour tout le reste, Plasma
 se rabat sur Breeze (« default »).
 
-- Dock et barre du haut : verre sombre rgba(28,28,32,0.62), filet blanc 12 %,
-  coins de 32 px (pilule complète pour un dock de 64 px).
+- Dock et barre du haut : verre sombre rgba(28,28,32,0.62), filet blanc 12 %.
+  Cadre « south » à coins de 28 px pour le dock (pilule presque complète),
+  cadre par défaut à petits coins pour la barre du haut de 34 px.
 - Boutons de tâches : cercles de 48 px, cercle blanc translucide derrière
   l'appli active.
 - Fenêtres surgissantes (lanceur, calendrier, zone de notification) : verre,
@@ -95,29 +96,66 @@ def margins(prefix, ox, oy, top, bottom, left, right):
     ]
 
 
+def stretch(prefix, ox, oy):
+    """Étirer les bords au lieu de les répéter en mosaïque.
+
+    Sans cet indice, Plasma répète les bords tous les r pixels, et chaque
+    raccord se voit à travers le verre translucide.
+    """
+    p = f"{prefix}-" if prefix else ""
+    return [f'<rect id="{p}hint-stretch-borders" x="{ox}" y="{oy}" width="1" height="1" fill="none"/>']
+
+
 def svg(elements, width, height):
     return (f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}">\n'
             "<!-- Généré par tools/make-plasma-theme.py : ne pas modifier à la main. -->\n"
             + "\n".join(elements) + "\n</svg>\n")
 
 
-def glass_background(r, opacity, top, bottom, left, right, thick=None):
-    """Fond en verre : cadre + masque de flou + marges (+ marges « thick »)."""
+def glass_frame(prefix, ox, r, opacity, m):
+    """Un fond en verre complet : cadre, masque de flou, marges, étirement."""
     side = 3 * r
-    els = frame("", 0, 0, r, GLASS, opacity, line_opacity=0.12)
-    els += frame("mask", side + 10, 0, r, None, None, mask=True)
-    els += margins("", 0, side + 10, top, bottom, left, right)
-    if thick:
-        # Marges « thick » : celles que Plasma utilise pour les panneaux.
-        els.append(f'<rect id="thick-center" x="{2 * side + 20}" y="0" width="{r}" '
-                   f'height="{r}" fill="{GLASS}" fill-opacity="{opacity}"/>')
-        els += margins("thick", 20, side + 10, *thick)
-    return svg(els, 2 * side + 20 + r, side + 40)
+    els = frame(prefix, ox, 0, r, GLASS, opacity, line_opacity=0.12)
+    # KSvg cherche le masque sous « mask-<préfixe>- » (ex. mask-south-center).
+    els += frame(f"mask-{prefix}" if prefix else "mask", ox + side + 10, 0, r, None, None, mask=True)
+    els += margins(prefix, ox, side + 10, m, m, m, m)
+    els += stretch(prefix, ox + 10, side + 10)
+    return els, ox + 2 * side + 20
+
+
+def panel_background(opacity):
+    """Dock et barre du haut.
+
+    Plasma refuse qu'un panneau soit moins épais que ses bords du haut et du
+    bas réunis, et il applique ce minimum à la création du panneau, avant de
+    savoir où il sera placé : la hauteur forcée est alors enregistrée.
+    - Fond par défaut (barre du haut) : petits coins de 4 px, donc aucun
+      minimum gênant ; seuls le bas et son filet sont visibles.
+    - Préfixe « south » (dock, en bas) : coins de 28 px. À 32 px (la moitié
+      exacte des 64 px), les morceaux du milieu feraient 0 px de haut et le
+      moindre arrondi laisserait des raccords visibles à travers le verre.
+    - Marges « thick » : Plasma les ajoute à 4 px pour tous les panneaux,
+      soit 8 px dans le dock (boutons de 48 px) et 6 px en haut.
+    """
+    els, x = glass_frame("", 0, 4, opacity, 4)
+    south, x = glass_frame("south", x, 28, opacity, 4)
+    els += south
+    els.append(f'<rect id="thick-center" x="{x}" y="0" width="8" height="8" '
+               f'fill="{GLASS}" fill-opacity="{opacity}"/>')
+    els += margins("thick", x, 20, 4, 4, 4, 4)
+    return svg(els, x + 20, 3 * 32 + 40)
+
+
+def dialog_background(opacity):
+    """Fenêtres surgissantes : coins de 20 px, marges de 12 px."""
+    els, x = glass_frame("", 0, 20, opacity, 12)
+    return svg(els, x, 3 * 20 + 40)
 
 
 def tasks():
-    """Boutons de tâches : cercles de 48 px (rayon 24), icône de 26 px."""
-    r = 24
+    """Boutons de tâches de 48 px aux coins de 22 px (presque des cercles,
+    sans morceaux de 0 px au milieu), icône de 26 px."""
+    r = 22
     states = {
         "normal": (WHITE, 0.0),
         "minimized": (WHITE, 0.0),
@@ -129,7 +167,9 @@ def tasks():
     els = []
     for i, (state, (color, opacity)) in enumerate(states.items()):
         els += frame(state, i * (3 * r + 10), 0, r, color, opacity)
+        els += stretch(state, i * (3 * r + 10) + 10, 3 * r + 10)
     els += margins("normal", 0, 3 * r + 10, 11, 11, 11, 11)
+    els += stretch("", 20, 3 * r + 10)
     return svg(els, len(states) * (3 * r + 10), 3 * r + 40)
 
 
@@ -146,7 +186,7 @@ METADATA = """{
         "Name": "Aube",
         "Version": "0.1"
     },
-    "X-Plasma-API-Minimum-Version": "6.0"
+    "X-Plasma-API": "5.0"
 }
 """
 
@@ -169,14 +209,11 @@ def main():
     files = {
         "metadata.json": METADATA,
         "plasmarc": PLASMARC,
-        # Dock et barre du haut : coins de 32 px. Plasma prend les marges
-        # « thick » + 4 px, plafonnées selon l'épaisseur : 8 px dans le dock
-        # de 64 px (boutons de 48 px), 6 px dans la barre du haut de 34 px.
-        "widgets/panel-background.svg": glass_background(32, 0.92, 4, 4, 4, 4, thick=(4, 4, 4, 4)),
-        "translucent/widgets/panel-background.svg": glass_background(32, 0.62, 4, 4, 4, 4, thick=(4, 4, 4, 4)),
+        "widgets/panel-background.svg": panel_background(0.92),
+        "translucent/widgets/panel-background.svg": panel_background(0.62),
         "widgets/tasks.svg": tasks(),
-        "dialogs/background.svg": glass_background(20, 0.95, 12, 12, 12, 12),
-        "translucent/dialogs/background.svg": glass_background(20, 0.72, 12, 12, 12, 12),
+        "dialogs/background.svg": dialog_background(0.95),
+        "translucent/dialogs/background.svg": dialog_background(0.72),
     }
     for rel, content in files.items():
         path = root / rel
