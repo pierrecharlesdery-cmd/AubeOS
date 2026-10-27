@@ -22,6 +22,8 @@ RUN python3 /src/tools/make-wallpaper.py /out/usr/share/wallpapers/Aube && \
     for s in 16 22 24 32 48 64 128 256 512; do \
         d=/out/usr/share/icons/hicolor/${s}x${s}/apps; mkdir -p "$d"; \
         rsvg-convert -w "$s" -h "$s" /src/branding/aube-icon.svg -o "$d/aube-logo.png"; \
+        rsvg-convert -w "$s" -h "$s" /src/branding/aube-launcher.svg -o "$d/aube-launcher.png"; \
+        rsvg-convert -w "$s" -h "$s" /src/branding/aube-logo-dark.svg -o "$d/aube-mark.png"; \
     done
 
 # --- Étape 2 : l'image Aube --------------------------------------------------
