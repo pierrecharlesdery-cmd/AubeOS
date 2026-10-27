@@ -1,0 +1,6 @@
+# Images disque produites par bootc-image-builder
+output/
+*.qcow2
+*.iso
+*.raw
+config.toml

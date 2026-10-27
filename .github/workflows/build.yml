@@ -1,0 +1,70 @@
+name: Build Aube
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - "**.md"
+      - "Docs/**"
+  pull_request:
+    branches: [main]
+  schedule:
+    # Rebâtir chaque jour pour suivre les mises à jour de Fedora.
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+
+env:
+  IMAGE_NAME: aube
+  FEDORA_VERSION: "44"
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Libérer de l'espace disque
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
+          sudo docker image prune --all --force
+          df -h /
+
+      - uses: actions/checkout@v4
+
+      - name: Nom du dépôt en minuscules
+        run: echo "IMAGE_REGISTRY=ghcr.io/${GITHUB_REPOSITORY_OWNER,,}" >> "$GITHUB_ENV"
+
+      - name: Étiquettes
+        id: tags
+        run: |
+          DATE=$(date -u +%Y%m%d)
+          echo "tags=latest ${FEDORA_VERSION} ${FEDORA_VERSION}-${DATE}" >> "$GITHUB_OUTPUT"
+
+      - name: Bâtir l'image
+        id: build
+        uses: redhat-actions/buildah-build@v2
+        with:
+          image: ${{ env.IMAGE_NAME }}
+          tags: ${{ steps.tags.outputs.tags }}
+          containerfiles: ./Containerfile
+          build-args: |
+            FEDORA_VERSION=${{ env.FEDORA_VERSION }}
+          oci: true
+
+      - name: Connexion à ghcr.io
+        if: github.event_name != 'pull_request'
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publier sur ghcr.io
+        if: github.event_name != 'pull_request'
+        uses: redhat-actions/push-to-registry@v2
+        with:
+          image: ${{ steps.build.outputs.image }}
+          tags: ${{ steps.build.outputs.tags }}
+          registry: ${{ env.IMAGE_REGISTRY }}

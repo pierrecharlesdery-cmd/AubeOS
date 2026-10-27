@@ -1,0 +1,21 @@
+# Valeurs par défaut d'Aube pour tous les utilisateurs.
+# /etc/xdg passe avant /usr/share/kde-settings (réglages Fedora).
+# Un utilisateur peut tout changer : ses choix vont dans ~/.config/kdeglobals.
+
+[General]
+ColorScheme=BreezeDark
+font=Geist,10,-1,5,400,0,0,0,0,0,0,0,0,0,0,1
+menuFont=Geist,10,-1,5,400,0,0,0,0,0,0,0,0,0,0,1
+toolBarFont=Geist,10,-1,5,400,0,0,0,0,0,0,0,0,0,0,1
+smallestReadableFont=Geist,8,-1,5,400,0,0,0,0,0,0,0,0,0,0,1
+fixed=Geist Mono,10,-1,5,400,0,0,0,0,0,0,0,0,0,0,1
+
+[Icons]
+Theme=breeze-dark
+
+[KDE]
+LookAndFeelPackage=org.aube.desktop
+widgetStyle=Breeze
+
+[WM]
+activeFont=Geist,10,-1,5,500,0,0,0,0,0,0,0,0,0,0,1
