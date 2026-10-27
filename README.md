@@ -14,7 +14,8 @@ Le guide visuel est dans [DESIGN.md](DESIGN.md) et les maquettes dans [Docs/Mock
 - Thème global **Aube** (`org.aube.desktop`), mis par défaut dans `/etc/xdg` :
   - schémas de couleurs `AubeDark` (par défaut) et `AubeLight`, accent orange `#FF7A3D`
   - fond d'écran Aube en 4K, version vive (mode clair) et sourde (mode sombre)
-  - barre des tâches flottante, centrée en bas, ajustée à son contenu
+  - barre du haut (34 px) et dock flottant (64 px), d'après la maquette « Bureau »
+  - thème Plasma `aube` : verre sombre, dock en pilule, boutons de tâches ronds
 - **Flathub** comme source d'applis par défaut dans Discover (à la place des Flatpaks Fedora)
 
 ## Structure
@@ -22,7 +23,7 @@ Le guide visuel est dans [DESIGN.md](DESIGN.md) et les maquettes dans [Docs/Mock
 ```
 Containerfile                 Recette de l'image (étape « assets » + image finale)
 branding/                     Logo et icône en SVG (sources)
-tools/                        Générateurs : fond d'écran, schémas de couleurs
+tools/                        Générateurs : fond d'écran, schémas de couleurs, thème Plasma
 system_files/                 Copié tel quel à la racine de l'image
   etc/xdg/kdeglobals          Police, couleurs et thème global par défaut
   etc/xdg/plasmarc            Thème Plasma sombre

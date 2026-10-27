@@ -19,6 +19,8 @@ COPY tools/ /src/tools/
 
 RUN python3 /src/tools/make-wallpaper.py /out/usr/share/wallpapers/Aube && \
     python3 /src/tools/make-color-schemes.py /out/usr/share/color-schemes && \
+    python3 /src/tools/make-plasma-theme.py /out/usr/share/plasma/desktoptheme/aube && \
+    cp /out/usr/share/color-schemes/AubeDark.colors /out/usr/share/plasma/desktoptheme/aube/colors && \
     for s in 16 22 24 32 48 64 128 256 512; do \
         d=/out/usr/share/icons/hicolor/${s}x${s}/apps; mkdir -p "$d"; \
         rsvg-convert -w "$s" -h "$s" /src/branding/aube-icon.svg -o "$d/aube-logo.png"; \

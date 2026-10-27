@@ -8,7 +8,7 @@ ColorScheme=AubeDark
 Theme=breeze-dark
 
 [plasmarc][Theme]
-name=default
+name=aube
 
 [kcminputrc][Mouse]
 cursorTheme=breeze_cursors
