@@ -12,7 +12,7 @@ panel.hiding = "none";
 
 var launcher = panel.addWidget("org.kde.plasma.kickoff");
 launcher.currentConfigGroup = ["General"];
-launcher.writeConfig("icon", "start-here-kde-symbolic");
+launcher.writeConfig("icon", "aube-logo");
 
 var tasks = panel.addWidget("org.kde.plasma.icontasks");
 tasks.currentConfigGroup = ["General"];
@@ -27,8 +27,10 @@ panel.addWidget("org.kde.plasma.marginsseparator");
 panel.addWidget("org.kde.plasma.systemtray");
 panel.addWidget("org.kde.plasma.digitalclock");
 
-// Fond d'écran sur chaque bureau.
+// Fond d'écran Aube sur chaque bureau (version claire ou sombre selon le thème).
 var desktopsArray = desktopsForActivity(currentActivity());
 for (var j = 0; j < desktopsArray.length; j++) {
     desktopsArray[j].wallpaperPlugin = "org.kde.image";
+    desktopsArray[j].currentConfigGroup = ["Wallpaper", "org.kde.image", "General"];
+    desktopsArray[j].writeConfig("Image", "file:///usr/share/wallpapers/Aube/");
 }

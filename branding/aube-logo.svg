@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+  <!-- Aube, piste « Émergence » : le A perce au-dessus du soleil.
+       Version pour fond clair. -->
+  <defs>
+    <clipPath id="soleil"><path d="M49 206a79 79 0 0 1 158 0z"/></clipPath>
+    <g id="a" fill="none" stroke-width="24" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M72 206 128 54l56 152M87.5 164h81"/>
+    </g>
+  </defs>
+  <path d="M49 206a79 79 0 0 1 158 0z" fill="#FF7A3D"/>
+  <use href="#a" stroke="#111113"/>
+  <use href="#a" stroke="#FFFFFF" clip-path="url(#soleil)"/>
+  <path d="M22 206h212" stroke="#111113" stroke-width="11" stroke-linecap="round"/>
+</svg>

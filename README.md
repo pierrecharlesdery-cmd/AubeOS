@@ -10,14 +10,19 @@ Le guide visuel est dans [DESIGN.md](DESIGN.md) et les maquettes dans [Docs/Mock
 - Base : `quay.io/fedora/fedora-kinoite:44` (dernière version stable)
 - Polices **Geist** et **Geist Mono** (OFL), par défaut dans Plasma et via fontconfig
 - Codecs multimédia complets (RPM Fusion) : `ffmpeg`, greffons GStreamer, `openh264`, pilote VA-API Intel complet, pont VA-API NVIDIA
+- Identité **Aube** : nom et version `AA.MM` dans `os-release`, logo « Émergence » (menu, À propos)
 - Thème global **Aube** (`org.aube.desktop`), mis par défaut dans `/etc/xdg` :
-  - thème sombre (Breeze sombre pour l'instant)
+  - schémas de couleurs `AubeDark` (par défaut) et `AubeLight`, accent orange `#FF7A3D`
+  - fond d'écran Aube en 4K, version vive (mode clair) et sourde (mode sombre)
   - barre des tâches flottante, centrée en bas, ajustée à son contenu
+- **Flathub** comme source d'applis par défaut dans Discover (à la place des Flatpaks Fedora)
 
 ## Structure
 
 ```
-Containerfile                 Recette de l'image
+Containerfile                 Recette de l'image (étape « assets » + image finale)
+branding/                     Logo et icône en SVG (sources)
+tools/                        Générateurs : fond d'écran, schémas de couleurs
 system_files/                 Copié tel quel à la racine de l'image
   etc/xdg/kdeglobals          Police, couleurs et thème global par défaut
   etc/xdg/plasmarc            Thème Plasma sombre
@@ -26,6 +31,8 @@ system_files/                 Copié tel quel à la racine de l'image
                               Thème global Aube et mise en page par défaut (layout.js)
 .github/workflows/build.yml   Build et publication sur ghcr.io
 ```
+
+Le fond d'écran, les schémas de couleurs et les icônes PNG sont générés pendant le build (étape `assets`) à partir de `branding/` et `tools/` : aucun fichier binaire n'est stocké dans le dépôt. Les icônes sont en PNG, car Qt ne sait pas afficher les `clipPath` des SVG.
 
 Les réglages de `/etc/xdg` et le script de mise en page ne touchent que les **nouveaux** utilisateurs, au premier lancement de Plasma. Un compte existant garde sa configuration (`~/.config`).
 
@@ -132,4 +139,5 @@ sudo bootc switch ghcr.io/<propriétaire>/aube:latest
 ## Limites connues
 
 - **Décodage vidéo matériel AMD (H.264/HEVC)** : depuis Fedora 44, `mesa-va-drivers` est intégré à `mesa-dri-drivers`, et `mesa-va-drivers-freeworld` de RPM Fusion retire mesa (et tout Plasma) à l'installation. On le laisse de côté pour l'instant ; le décodage logiciel fonctionne.
-- Le thème est encore Breeze sombre : le schéma de couleurs, le thème Plasma et le style en pilules d'Aube viendront ensuite.
+- `ID=fedora` et `VERSION_ID` restent ceux de Fedora dans `os-release` : bootc-image-builder et toolbox s'en servent pour reconnaître la base.
+- Le style des widgets est encore Breeze : le thème Plasma en verre et les pilules d'Aube viendront ensuite.

@@ -1,2 +1,3 @@
 [Theme]
-name=breeze-dark
+# « default » = Breeze, qui suit le schéma de couleurs (AubeDark).
+name=default

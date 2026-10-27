@@ -3,7 +3,7 @@
 # Un utilisateur peut tout changer : ses choix vont dans ~/.config/kdeglobals.
 
 [General]
-ColorScheme=BreezeDark
+ColorScheme=AubeDark
 font=Geist,10,-1,5,400,0,0,0,0,0,0,0,0,0,0,1
 menuFont=Geist,10,-1,5,400,0,0,0,0,0,0,0,0,0,0,1
 toolBarFont=Geist,10,-1,5,400,0,0,0,0,0,0,0,0,0,0,1
